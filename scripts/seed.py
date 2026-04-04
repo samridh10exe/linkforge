@@ -10,7 +10,7 @@ from app.models import Event, Url, User
 
 
 def _seed_root():
-    return Path(__file__).resolve().parents[2] / "Seed Data"
+    return Path(__file__).resolve().parents[1] / "Seed Data"
 
 
 def _parse_bool(value):
