@@ -111,3 +111,14 @@ def bulk_import_users(rows):
         User.insert_many(payloads).on_conflict_ignore().execute()
     after = User.select().count()
     return after - before
+
+
+def delete_user(user_id):
+    user = get_user_by_id(user_id)
+    from app.models.event import Event
+    from app.models.url import Url
+
+    with db.atomic():
+        Event.delete().where(Event.user == user.id).execute()
+        Url.delete().where(Url.user == user.id).execute()
+        User.delete().where(User.id == user.id).execute()

@@ -3,6 +3,7 @@ from peewee import DatabaseProxy, Model, OperationalError
 from playhouse.pool import PooledPostgresqlExtDatabase
 
 db = DatabaseProxy()
+_schema_ready = False
 
 
 class BaseModel(Model):
@@ -47,6 +48,26 @@ def close_db():
         db.close()
 
 
+def ensure_schema():
+    global _schema_ready
+    if _schema_ready:
+        return
+
+    from app.models import Event, Url, User
+
+    Event._meta.database.create_tables([User, Url, Event], safe=True)
+    Event._meta.database.execute_sql(
+        "CREATE INDEX IF NOT EXISTS urls_user_created_at_idx ON urls (user_id, created_at DESC)"
+    )
+    Event._meta.database.execute_sql(
+        "CREATE INDEX IF NOT EXISTS urls_active_expires_idx ON urls (is_active, expires_at)"
+    )
+    Event._meta.database.execute_sql(
+        "CREATE INDEX IF NOT EXISTS events_url_timestamp_idx ON events (url_id, timestamp DESC)"
+    )
+    _schema_ready = True
+
+
 def init_app_database(app):
     from app.errors import APIError
 
@@ -58,6 +79,7 @@ def init_app_database(app):
             return
         try:
             connect_db()
+            ensure_schema()
         except OperationalError as exc:
             raise APIError(503, "database_unavailable", "Database is unavailable") from exc
 

@@ -8,6 +8,7 @@ from app.services.urls import list_user_urls, serialize_url_resource
 from app.services.users import (
     bulk_import_users,
     create_user,
+    delete_user,
     get_user_by_id,
     list_users,
     serialize_user,
@@ -66,6 +67,12 @@ def put_user(user_id):
     payload = parse_json_body()
     user = update_user(user_id, payload)
     return jsonify(serialize_user(user))
+
+
+@users_bp.delete("/users/<int:user_id>")
+def remove_user(user_id):
+    delete_user(user_id)
+    return "", 204
 
 
 @users_bp.get("/users/<int:user_id>/urls")

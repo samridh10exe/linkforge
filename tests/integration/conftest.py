@@ -3,7 +3,7 @@ import os
 import pytest
 
 from app import create_app
-from app.database import close_db, connect_db, db
+from app.database import close_db, connect_db, db, ensure_schema
 from app.models import Event, Url, User
 from app.validators import utcnow
 from scripts.bootstrap_db import bootstrap
@@ -29,7 +29,9 @@ def app():
 def clean_db(app, monkeypatch):
     with app.app_context():
         connect_db()
+        ensure_schema()
         db.execute_sql("TRUNCATE TABLE events, urls, users RESTART IDENTITY CASCADE")
+        db.commit()
     monkeypatch.setattr("app.routes.urls.enqueue_click_event", lambda *args, **kwargs: None)
     yield
     with app.app_context():
@@ -42,7 +44,7 @@ def client(app):
 
 
 @pytest.fixture
-def user(app):
+def user(app, clean_db):
     with app.app_context():
         return User.create(
             username="alice",

@@ -94,6 +94,39 @@ def test_urls_and_events_contract(client, user):
     assert any(event["event_type"] == "created" for event in events)
     assert any(event["event_type"] == "updated" for event in events)
 
+    response = client.post(
+        "/events",
+        json={
+            "url_id": created["id"],
+            "user_id": user.id,
+            "event_type": "click",
+            "details": {"referrer": "https://google.com"},
+        },
+    )
+    event = response.get_json()
+    assert response.status_code == 201
+    assert event["event_type"] == "click"
+
+    response = client.get("/events", query_string={"url_id": created["id"]})
+    assert response.status_code == 200
+    assert all(item["url_id"] == created["id"] for item in response.get_json())
+
+    response = client.get("/events", query_string={"user_id": user.id})
+    assert response.status_code == 200
+    assert all(item["user_id"] == user.id for item in response.get_json())
+
+    response = client.get("/events", query_string={"event_type": "click"})
+    filtered_events = response.get_json()
+    assert response.status_code == 200
+    assert len(filtered_events) == 1
+    assert filtered_events[0]["event_type"] == "click"
+
+    response = client.delete(f"/urls/{created['id']}")
+    assert response.status_code == 204
+
+    response = client.delete(f"/users/{user.id}")
+    assert response.status_code == 204
+
 
 def test_user_create_rejects_invalid_schema(client):
     response = client.post(

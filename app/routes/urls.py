@@ -5,6 +5,7 @@ from app.services.events import enqueue_click_event
 from app.services.urls import (
     create_short_url,
     deactivate_short_code,
+    delete_url_by_id,
     get_url_by_id,
     list_urls,
     resolve_short_code,
@@ -63,14 +64,23 @@ def create_url():
 @urls_bp.get("/urls")
 def get_urls():
     user_id = request.args.get("user_id")
+    is_active = request.args.get("is_active")
     if user_id is not None:
         try:
             user_id = int(user_id)
         except ValueError as exc:
             raise APIError(400, "invalid_user_id", "user_id must be an integer") from exc
+    if is_active is not None:
+        lowered = is_active.strip().lower()
+        if lowered not in {"true", "false"}:
+            raise APIError(400, "invalid_is_active", "is_active must be true or false")
+        is_active = lowered == "true"
     page, per_page = _pagination()
     return jsonify(
-        [serialize_url_resource(url) for url in list_urls(user_id=user_id, page=page, per_page=per_page)]
+        [
+            serialize_url_resource(url)
+            for url in list_urls(user_id=user_id, is_active=is_active, page=page, per_page=per_page)
+        ]
     )
 
 
@@ -84,6 +94,12 @@ def put_url(url_id):
     from app.validators import parse_json_body
 
     return jsonify(serialize_url_resource(update_url_by_id(url_id, parse_json_body())))
+
+
+@urls_bp.delete("/urls/<int:url_id>")
+def remove_url(url_id):
+    delete_url_by_id(url_id)
+    return "", 204
 
 
 @urls_bp.delete("/<string:short_code>")

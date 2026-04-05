@@ -10,6 +10,18 @@ from app.validators import utcnow
 _executor = None
 
 
+def normalize_event_type(event_type):
+    if event_type == "click":
+        return "clicked"
+    return event_type
+
+
+def public_event_type(event_type):
+    if event_type == "clicked":
+        return "click"
+    return event_type
+
+
 def _get_executor():
     global _executor
     if _executor is None:
@@ -24,7 +36,7 @@ def create_event(url_id, user_id, event_type, details):
     Event.create(
         url=url_id,
         user=user_id,
-        event_type=event_type,
+        event_type=normalize_event_type(event_type),
         timestamp=utcnow(),
         details=details,
     )

@@ -164,11 +164,13 @@ def list_user_urls(user_id):
     )
 
 
-def list_urls(*, user_id=None, page=None, per_page=None):
+def list_urls(*, user_id=None, is_active=None, page=None, per_page=None):
     query = Url.select().order_by(Url.id.asc())
     if user_id is not None:
         _require_user(user_id)
         query = query.where(Url.user == user_id)
+    if is_active is not None:
+        query = query.where(Url.is_active == is_active)
     if page is not None and per_page is not None:
         query = query.paginate(page, per_page)
     return list(query)
@@ -209,3 +211,12 @@ def update_url_by_id(url_id, payload):
         for field, value in changed.items():
             create_event(url.id, url.user_id, "updated", {"field": field, "new_value": value})
     return get_url_by_id(url.id)
+
+
+def delete_url_by_id(url_id):
+    url = get_url_by_id(url_id)
+    now = utcnow()
+    with db.atomic():
+        Url.update(is_active=False, updated_at=now).where(Url.id == url.id).execute()
+        create_event(url.id, url.user_id, "deleted", {"reason": "user_requested"})
+        cache_delete(f"url:{url.short_code}")

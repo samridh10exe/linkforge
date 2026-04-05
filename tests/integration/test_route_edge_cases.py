@@ -179,7 +179,9 @@ def test_post_users_bulk_returns_zero_when_all_rows_conflict(client):
     assert first.status_code == 201
     assert second.status_code == 201
     assert second.get_json()["count"] == 0
-    assert User.select().count() == 2
+    response = client.get("/users")
+    assert response.status_code == 200
+    assert len(response.get_json()) == 2
 
 
 def test_get_users_rejects_non_integer_pagination(client):
