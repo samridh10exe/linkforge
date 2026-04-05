@@ -60,14 +60,12 @@ Multi-container setup: nginx -> web1/web2 (round-robin), Redis cache, PostgreSQL
 
 | Scenario | VUs | Duration | RPS | p50 | p95 | Error Rate | Verdict |
 |---|---:|---:|---:|---:|---:|---:|---|
-| Read-heavy redirect | 200 | 60s | 135 | 1300ms | 3000ms | **0.00%** | Silver pass |
-| Read-heavy redirect | 500 | 60s | 130 | 3500ms | 6300ms | **2.52%** | Gold pass (<5%) |
+| Read-heavy redirect | 200 | 60s | 135 | 1300ms | 3000ms | 0.00% | Silver pass |
+| Read-heavy redirect | 500 | 60s | 130 | 3500ms | 6300ms | 2.52% | Gold pass (<5%) |
 
 Error breakdown at 500 VUs:
 - 136x `HTTPConnectionClosed` (nginx upstream timeouts under extreme load)
 - 60x `500` (gunicorn worker saturation)
-
-All errors are transient under extreme load, not logic bugs.
 
 ## Reproduce
 

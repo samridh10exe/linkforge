@@ -19,6 +19,6 @@
   - redirects resumed
   - no traceback leaked in recent logs
 - DB loss under mixed evaluator load:
-  - `/health` stayed on the liveness surface
-  - data routes emitted `503` during the outage in the load log
+  - `/health` kept returning `200` (no DB dependency)
+  - data routes returned `503` during the outage
   - service recovered when PostgreSQL returned

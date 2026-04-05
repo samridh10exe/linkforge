@@ -21,9 +21,9 @@
 
 ## Discord Alerting
 
-- **Monitor:** `scripts/monitor.py` polls `/health` every 30s
-- **Webhook:** Discord `#alerts` channel
-- **Evidence:** monitor log at `/var/log/monitor.log` on droplet
+- Monitor: `scripts/monitor.py` polls `/health` every 30s
+- Webhook: Discord `#alerts` channel
+- Evidence: `/var/log/monitor.log` on droplet
 
 Alert cycle captured on 2026-04-05:
 ```
@@ -32,7 +32,7 @@ Alert cycle captured on 2026-04-05:
 ✅ [2026-04-05T05:33:01.628745] Service RECOVERED — http://localhost/health is back up
 ```
 
-Both messages posted to Discord `#alerts` channel successfully (HTTP 204).
+Both messages posted to Discord (HTTP 204).
 
 ## Runbook Linkage
 

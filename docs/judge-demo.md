@@ -3,46 +3,35 @@
 ## Setup
 
 ```bash
-sg docker -c 'docker compose up -d --build web nginx postgres'
-./scripts/reset_app_db.sh
+docker compose up -d --build
+docker compose exec web1 env PYTHONPATH=/app uv run python scripts/bootstrap_db.py
+docker compose exec web1 env PYTHONPATH=/app uv run python scripts/seed.py "Seed Data"
 ```
 
-## Evaluator Contract
+## Evaluator contract
 
 ```bash
 ./scripts/evaluator_smoke.sh http://localhost
 ```
 
-Show:
-- `GET /health -> 200 {"status":"ok"}`
-- user creation and update
-- URL creation and update
-- event listing
+Shows: `GET /health` returns 200, user CRUD, URL CRUD, event listing.
 
-## Load Proof
+## Load proof
 
-Show these artifact files:
+Artifact directories:
 - `docs/judging/artifacts/load/baseline/`
 - `docs/judging/artifacts/load/tuned/`
 - `docs/judging/artifacts/load/breakpoint/`
 
-Call out:
-- mixed-flow p95 improved from `460ms` to `400ms`
-- write-heavy p95 improved from `180ms` to `120ms`
-- read-heavy remained error-free
+Key results: mixed-flow p95 improved from 460ms to 400ms after tuning,
+write-heavy p95 from 180ms to 120ms, read-heavy stayed error-free.
 
-## Chaos Proof
+## Chaos proof
 
 ```bash
 ./scripts/chaos_demo.sh
 ```
 
-Show:
-- healthy service
-- redirect working
-- web process kill under read load
-- `GET /health` recovers
-- redirect resumes
-- DB outage under mixed load
-- recovery once DB returns
-- no traceback leak in recent web logs
+Shows: web process crash under load, health recovers, redirects resume,
+DB outage returns 503 on data routes, recovery after DB returns,
+no tracebacks in logs.

@@ -1,56 +1,29 @@
 # Environment Variables
 
-## Application
+| Variable | Section | Notes |
+|----------|---------|-------|
+| `FLASK_ENV` | App | `development` or `production` |
+| `SECRET_KEY` | App | |
+| `SHORT_CODE_LENGTH` | App | Default 6 |
+| `SHORT_CODE_ATTEMPTS` | App | Retry limit for collision avoidance |
+| `CLICK_EVENT_WORKERS` | App | Background thread count |
+| `DATABASE_NAME` | DB | |
+| `DATABASE_HOST` | DB | |
+| `DATABASE_PORT` | DB | |
+| `DATABASE_USER` | DB | |
+| `DATABASE_PASSWORD` | DB | |
+| `DATABASE_MAX_CONNECTIONS` | DB | Pool size |
+| `DATABASE_STALE_TIMEOUT` | DB | Seconds before stale connection is dropped |
+| `DATABASE_POOL_TIMEOUT` | DB | Seconds to wait for a pool slot |
+| `TEST_DATABASE_NAME` | DB | Used by pytest |
+| `GUNICORN_WORKERS` | Gunicorn | |
+| `GUNICORN_THREADS` | Gunicorn | |
+| `GUNICORN_TIMEOUT` | Gunicorn | |
+| `GUNICORN_GRACEFUL_TIMEOUT` | Gunicorn | |
+| `HEALTH_DB_TIMEOUT_MS` | Health | Timeout for `/ready` DB check |
+| `REDIS_URL` | Cache | Redis connection string |
+| `MONITOR_HEALTH_URL` | Monitor | URL polled by `scripts/monitor.py` |
+| `DISCORD_WEBHOOK_URL` | Monitor | Discord webhook for alerts |
+| `MONITOR_INTERVAL` | Monitor | Seconds between polls |
 
-- `FLASK_ENV`
-- `SECRET_KEY`
-- `SHORT_CODE_LENGTH`
-- `SHORT_CODE_ATTEMPTS`
-- `CLICK_EVENT_WORKERS`
-
-## Database
-
-- `DATABASE_NAME`
-- `DATABASE_HOST`
-- `DATABASE_PORT`
-- `DATABASE_USER`
-- `DATABASE_PASSWORD`
-- `DATABASE_MAX_CONNECTIONS`
-- `DATABASE_STALE_TIMEOUT`
-- `DATABASE_POOL_TIMEOUT`
-- `TEST_DATABASE_NAME`
-
-## Gunicorn
-
-- `GUNICORN_WORKERS`
-- `GUNICORN_THREADS`
-- `GUNICORN_TIMEOUT`
-- `GUNICORN_GRACEFUL_TIMEOUT`
-
-## Health
-
-- `HEALTH_DB_TIMEOUT_MS`
-
-## Recommended Local Docker Values
-
-```env
-FLASK_ENV=development
-SECRET_KEY=dev-secret-key
-DATABASE_NAME=hackathon_app
-DATABASE_HOST=postgres
-DATABASE_PORT=5432
-DATABASE_USER=postgres
-DATABASE_PASSWORD=postgres
-DATABASE_MAX_CONNECTIONS=12
-DATABASE_STALE_TIMEOUT=300
-DATABASE_POOL_TIMEOUT=5
-HEALTH_DB_TIMEOUT_MS=1000
-SHORT_CODE_LENGTH=6
-SHORT_CODE_ATTEMPTS=10
-CLICK_EVENT_WORKERS=2
-GUNICORN_WORKERS=2
-GUNICORN_THREADS=2
-GUNICORN_TIMEOUT=30
-GUNICORN_GRACEFUL_TIMEOUT=10
-TEST_DATABASE_NAME=hackathon_test
-```
+See `.env.example` for recommended local values.

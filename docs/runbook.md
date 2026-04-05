@@ -1,50 +1,42 @@
 # Runbook
 
-## Fast Checks
+## Quick checks
 
 ```bash
 curl -i http://localhost/health
 curl -i http://localhost/ready
-curl -sS http://localhost/metrics | sed -n '1,40p'
-sg docker -c 'docker compose ps'
-sg docker -c 'docker compose logs web postgres --since 5m'
+curl -s http://localhost/metrics | head -40
+docker compose ps
+docker compose logs web1 web2 postgres --since 5m
 ```
 
-## Incident Triage
+## Incident triage
 
-1. Check `GET /health`.
-2. If `GET /health` is `200` but user traffic is broken, check `GET /ready`.
-3. Inspect `docker compose ps` for restart state.
-4. Check recent `web` and `postgres` logs.
-5. Re-run `./scripts/smoke.sh http://localhost`.
-6. If the web container is gone, re-run `./scripts/chaos_demo.sh` after recovery to verify restart behavior.
+1. Check `GET /health`. If it returns 200, the process is alive.
+2. If health is 200 but traffic is broken, check `GET /ready` for DB issues.
+3. Run `docker compose ps` and look for restart counts.
+4. Check `web1`, `web2`, and `postgres` logs.
+5. Run `./scripts/evaluator_smoke.sh http://localhost` to verify API surface.
 
-## Recovery Steps
+## Recovery
 
-### Web Failure
+### Web container failure
 
 ```bash
-sg docker -c 'docker compose up -d web nginx'
+docker compose up -d web1 web2 nginx
 curl -i http://localhost/health
 ```
 
-### Database Failure
+### Database failure
 
 ```bash
-sg docker -c 'docker compose start postgres'
-sg docker -c 'docker compose exec -T postgres pg_isready -U postgres -d hackathon_app'
+docker compose start postgres
+docker compose exec -T postgres pg_isready -U postgres -d hackathon_app
 curl -i http://localhost/ready
 ```
 
-### Schema Repair
+### Schema repair
 
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
-export PYTHONPATH=.
-export DATABASE_HOST=localhost
-export DATABASE_PORT=5432
-export DATABASE_USER=postgres
-export DATABASE_PASSWORD=postgres
-export DATABASE_NAME=hackathon_app
-uv run python scripts/bootstrap_db.py
+docker compose exec web1 env PYTHONPATH=/app uv run python scripts/bootstrap_db.py
 ```
