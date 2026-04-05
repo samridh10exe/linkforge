@@ -89,7 +89,7 @@ READ_LOAD_PID=$!
 
 sleep 8
 log "killing web container under read load"
-run_docker exec "$(run_compose ps -q web)" sh -lc 'kill -9 1' >> "${LOG_FILE}" 2>&1 || true
+run_docker exec "$(run_compose ps -q web1)" sh -lc 'kill -9 1' >> "${LOG_FILE}" 2>&1 || true
 wait_for_health 45
 REDIRECT_CODE="$(curl -sS -o /dev/null -w "%{http_code}" "${BASE_URL}/${SHORT_CODE}" || true)"
 log "redirect status after web recovery: ${REDIRECT_CODE}"
@@ -126,7 +126,7 @@ log "users after db recovery: status=${USERS_RECOVERY_CODE}"
 wait "${DB_LOAD_PID}"
 log "db chaos load run complete"
 
-WEB_LOGS="$(run_compose logs web --since "${LOG_START}" 2>&1 || true)"
+WEB_LOGS="$(run_compose logs web1 web2 --since "${LOG_START}" 2>&1 || true)"
 if grep -q "Traceback" <<<"${WEB_LOGS}"; then
   log "traceback detected in recent web logs"
   exit 1

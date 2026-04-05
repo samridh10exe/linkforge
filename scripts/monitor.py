@@ -22,7 +22,8 @@ def post_discord(message):
     data = json.dumps({"content": message}).encode()
     req = urllib.request.Request(
         WEBHOOK_URL, data=data,
-        headers={"Content-Type": "application/json"}, method="POST",
+        headers={"Content-Type": "application/json", "User-Agent": "HealthMonitor/1.0"},
+        method="POST",
     )
     try:
         urllib.request.urlopen(req, timeout=10)
