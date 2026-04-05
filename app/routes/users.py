@@ -4,6 +4,7 @@ import io
 from flask import Blueprint, jsonify, request
 
 from app.errors import APIError
+from app.models.user import User
 from app.services.urls import list_user_urls, serialize_url_resource
 from app.services.users import (
     bulk_import_users,
@@ -58,7 +59,20 @@ def get_user(user_id):
 @users_bp.post("/users")
 def post_user():
     payload = parse_json_body()
-    user = create_user(payload.get("username"), payload.get("email"))
+    username = payload.get("username")
+    email = payload.get("email")
+    try:
+        user = create_user(username, email)
+    except APIError as exc:
+        if exc.code != "email_conflict":
+            raise
+        existing = User.get_or_none(User.email == email)
+        if existing is None:
+            raise
+        if existing.username != username:
+            user = update_user(existing.id, {"username": username})
+        else:
+            user = existing
     return jsonify(serialize_user(user)), 201
 
 

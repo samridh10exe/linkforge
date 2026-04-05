@@ -1,6 +1,7 @@
 from flask import Blueprint, current_app, jsonify, redirect, request
 
 from app.metrics import mark_redirect
+from app.models.url import Url
 from app.services.events import create_event, enqueue_click_event
 from app.services.urls import (
     create_short_url,
@@ -50,14 +51,19 @@ def _pagination():
 @urls_bp.post("/urls")
 def create_url():
     payload = validate_shorten_payload()
-    url = create_short_url(
-        payload["original_url"],
-        payload["title"],
-        payload["user_id"],
-        payload["expires_at"],
-        code_length=current_app.config["SHORT_CODE_LENGTH"],
-        max_attempts=current_app.config["SHORT_CODE_ATTEMPTS"],
-    )
+    try:
+        url = create_short_url(
+            payload["original_url"],
+            payload["title"],
+            payload["user_id"],
+            payload["expires_at"],
+            code_length=current_app.config["SHORT_CODE_LENGTH"],
+            max_attempts=current_app.config["SHORT_CODE_ATTEMPTS"],
+        )
+    except APIError as exc:
+        if exc.code != "url_already_shortened":
+            raise
+        url = Url.get(Url.short_code == exc.extra["short_code"])
     return jsonify(serialize_url_resource(url)), 201
 
 
