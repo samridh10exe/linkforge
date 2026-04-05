@@ -1,0 +1,7 @@
+[2026-04-04T13:32:58-04:00] created short code FH2PPu
+[2026-04-04T13:33:07-04:00] killing web container under read load
+ Container pe-hackathon-template-2026-web-1 Killing 
+ Container pe-hackathon-template-2026-web-1 Killed 
+[2026-04-04T13:35:05-04:00] health recovered: {"status":"ok"}
+[2026-04-04T13:35:13-04:00] killing web container under read load
+./scripts/chaos_demo.sh: line 86: run_docker: command not found

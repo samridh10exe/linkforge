@@ -1,0 +1,22 @@
+{
+  "docker_peaks": {
+    "pe-hackathon-template-2026-nginx-1": {
+      "max_cpu_percent": 35.83,
+      "max_mem_mib": 12.9
+    },
+    "pe-hackathon-template-2026-postgres-1": {
+      "max_cpu_percent": 94.92,
+      "max_mem_mib": 79.59
+    },
+    "pe-hackathon-template-2026-web-1": {
+      "max_cpu_percent": 291.58,
+      "max_mem_mib": 130.1
+    }
+  },
+  "error_rate_percent": 0.0,
+  "failures": 0,
+  "p50_ms": 140.0,
+  "p95_ms": 250.0,
+  "requests": 9965,
+  "requests_per_second": 523.9
+}

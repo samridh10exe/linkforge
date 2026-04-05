@@ -1,0 +1,18 @@
+[2026-04-04T13:44:32-04:00] created short code E9U14Q
+[2026-04-04T13:44:40-04:00] killing web container under read load
+[2026-04-04T13:44:41-04:00] health recovered: {"status":"ok"}
+[2026-04-04T13:44:41-04:00] redirect status after web recovery: 302
+[2026-04-04T13:45:19-04:00] web chaos load run complete
+[2026-04-04T13:45:28-04:00] stopping postgres under mixed evaluator load
+ Container pe-hackathon-template-2026-postgres-1 Stopping 
+ Container pe-hackathon-template-2026-postgres-1 Stopped 
+[2026-04-04T13:45:35-04:00] health during db outage: status=000 body=
+ Container pe-hackathon-template-2026-postgres-1 Starting 
+ Container pe-hackathon-template-2026-postgres-1 Started 
+/var/run/postgresql:5432 - accepting connections
+[2026-04-04T13:45:42-04:00] health recovered: {"status":"ok"}
+[2026-04-04T13:45:43-04:00] ready after db recovery: status=200 body={"db":"connected","status":"ready","timestamp":"2026-04-04T17:45:43"}
+[2026-04-04T13:45:44-04:00] users after db recovery: status=200
+[2026-04-04T13:46:06-04:00] db chaos load run complete
+[2026-04-04T13:46:08-04:00] no traceback detected in recent web logs
+[2026-04-04T13:46:08-04:00] chaos demo finished
