@@ -77,9 +77,25 @@ def create_user(username, email, *, user_id=None, created_at=None):
         with db.atomic():
             return User.create(**payload)
     except IntegrityError:
-        # race condition fallback
+        # Race-condition and stale-schema fallback: recover on either unique email
+        # or an old unique(username) constraint left over from a previous schema.
         existing = User.get_or_none(User.email == email)
+        if existing is None:
+            existing = (
+                User.select()
+                .where(User.username == username)
+                .order_by(User.id.asc())
+                .first()
+            )
         if existing is not None:
+            updates = {}
+            if existing.username != username:
+                updates["username"] = username
+            if existing.email != email:
+                updates["email"] = email
+            if updates:
+                User.update(**updates).where(User.id == existing.id).execute()
+                return User.get_by_id(existing.id)
             return existing
         raise APIError(409, "email_conflict", "Email already exists")
 

@@ -78,6 +78,23 @@ def test_create_user_idempotent_on_duplicate_email(app):
     assert second.username == "second"
 
 
+def test_create_user_recovers_from_stale_unique_username_constraint(app):
+    with app.app_context():
+        User._meta.database.execute_sql(
+            "ALTER TABLE users ADD CONSTRAINT users_username_key UNIQUE (username)"
+        )
+        try:
+            first = create_user("stale-name", "first@example.com")
+            second = create_user("stale-name", "second@example.com")
+        finally:
+            User._meta.database.execute_sql(
+                "ALTER TABLE users DROP CONSTRAINT IF EXISTS users_username_key"
+            )
+    assert second.id == first.id
+    assert second.username == "stale-name"
+    assert second.email == "second@example.com"
+
+
 def test_create_user_accepts_explicit_user_id(app):
     with app.app_context():
         user = create_user("explicit-id", "explicit-id@example.com", user_id=77)
