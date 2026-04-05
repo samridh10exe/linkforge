@@ -210,3 +210,28 @@ def test_get_users_rejects_non_positive_pagination(client):
 
     assert response.status_code == 400
     assert payload["error"]["code"] == "invalid_pagination"
+
+
+def test_post_users_recovers_to_201_with_stale_unique_username_constraint(client):
+    User._meta.database.execute_sql(
+        "ALTER TABLE users ADD CONSTRAINT users_username_key UNIQUE (username)"
+    )
+    try:
+        first = client.post(
+            "/users",
+            json={"username": "testuser_create", "email": "first-create@example.com"},
+        )
+        second = client.post(
+            "/users",
+            json={"username": "testuser_create", "email": "testuser_create@example.com"},
+        )
+    finally:
+        User._meta.database.execute_sql(
+            "ALTER TABLE users DROP CONSTRAINT IF EXISTS users_username_key"
+        )
+
+    payload = second.get_json()
+    assert first.status_code == 201
+    assert second.status_code == 201
+    assert payload["username"] == "testuser_create"
+    assert payload["email"] == "testuser_create@example.com"
