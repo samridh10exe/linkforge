@@ -26,6 +26,7 @@ class Settings:
     SHORT_CODE_LENGTH: int
     SHORT_CODE_ATTEMPTS: int
     CLICK_EVENT_WORKERS: int
+    REDIS_URL: str
 
     def as_dict(self):
         return asdict(self)
@@ -48,6 +49,7 @@ def load_settings(overrides=None):
         SHORT_CODE_LENGTH=int(os.getenv("SHORT_CODE_LENGTH", "6")),
         SHORT_CODE_ATTEMPTS=int(os.getenv("SHORT_CODE_ATTEMPTS", "10")),
         CLICK_EVENT_WORKERS=int(os.getenv("CLICK_EVENT_WORKERS", "2")),
+        REDIS_URL=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
     )
     if overrides:
         allowed = set(Settings.__dataclass_fields__)

@@ -96,15 +96,22 @@ def delete_url(short_code):
 @urls_bp.get("/<string:short_code>")
 def redirect_short_code(short_code):
     url = resolve_short_code(short_code)
+    is_dict = isinstance(url, dict)
+    _id = url["id"] if is_dict else url.id
+    _user_id = url["user_id"] if is_dict else url.user_id
+    _short_code = url["short_code"] if is_dict else url.short_code
+    _original_url = url["original_url"] if is_dict else url.original_url
     enqueue_click_event(
-        url.id,
-        url.user_id,
+        _id,
+        _user_id,
         {
-            "short_code": url.short_code,
+            "short_code": _short_code,
             "referrer": request.headers.get("Referer"),
             "user_agent": request.headers.get("User-Agent"),
             "remote_addr": request.headers.get("X-Forwarded-For", request.remote_addr),
         },
     )
     mark_redirect()
-    return redirect(url.original_url, code=302)
+    response = redirect(_original_url, code=302)
+    response.headers["X-Cache"] = "HIT" if is_dict else "MISS"
+    return response

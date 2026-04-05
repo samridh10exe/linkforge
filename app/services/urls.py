@@ -1,7 +1,10 @@
 import hashlib
+import json
+from datetime import datetime
 
 from peewee import IntegrityError
 
+from app.cache import cache_delete, cache_get, cache_set
 from app.database import db
 from app.errors import APIError
 from app.metrics import mark_collision, mark_duplicate_conflict
@@ -99,6 +102,20 @@ def create_short_url(original_url, title, user_id, expires_at, *, code_length, m
 
 
 def resolve_short_code(short_code):
+    # cache hit path
+    cached = cache_get(f"url:{short_code}")
+    if cached is not None:
+        data = json.loads(cached)
+        if not data["is_active"]:
+            raise APIError(410, "short_code_inactive", "URL is no longer active")
+        if data["expires_at"] is not None:
+            exp = datetime.fromisoformat(data["expires_at"])
+            if exp <= utcnow():
+                raise APIError(410, "short_code_expired", "URL is no longer active")
+        data["_cache_hit"] = True
+        return data
+
+    # cache miss — hit db
     url = Url.get_or_none(Url.short_code == short_code)
     if url is None:
         raise APIError(404, "short_code_not_found", "Short code not found")
@@ -106,6 +123,16 @@ def resolve_short_code(short_code):
         raise APIError(410, "short_code_inactive", "URL is no longer active")
     if url.expires_at is not None and url.expires_at <= utcnow():
         raise APIError(410, "short_code_expired", "URL is no longer active")
+
+    # populate cache
+    cache_set(f"url:{short_code}", json.dumps({
+        "id": url.id,
+        "user_id": url.user_id,
+        "short_code": url.short_code,
+        "original_url": url.original_url,
+        "is_active": url.is_active,
+        "expires_at": url.expires_at.isoformat() if url.expires_at else None,
+    }))
     return url
 
 
@@ -122,6 +149,7 @@ def deactivate_short_code(short_code, user_id, reason):
         now = utcnow()
         (Url.update(is_active=False, updated_at=now).where(Url.id == url.id).execute())
         create_event(url.id, url.user_id, "deleted", {"reason": reason})
+        cache_delete(f"url:{short_code}")
         url.is_active = False
         url.updated_at = now
         return url
