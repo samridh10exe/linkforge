@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      PYTHONPATH: .
+      DATABASE_NAME: hackathon_app
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      TEST_DATABASE_NAME: hackathon_test
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Install dependencies
+        run: uv sync --dev
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -U postgres -d postgres; do
+            sleep 1
+          done
+      - name: Create app and test databases
+        run: |
+          psql -h localhost -U postgres -d postgres -c "CREATE DATABASE hackathon_app;"
+          psql -h localhost -U postgres -d postgres -c "CREATE DATABASE hackathon_test;"
+      - name: Bootstrap app schema
+        run: uv run python scripts/bootstrap_db.py
+      - name: Bootstrap test schema
+        run: DATABASE_NAME=$TEST_DATABASE_NAME uv run python scripts/bootstrap_db.py
+      - name: Run tests
+        run: uv run pytest --cov=app --cov-report=term-missing --cov-fail-under=70
