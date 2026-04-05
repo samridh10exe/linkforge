@@ -104,6 +104,18 @@ def put_url(url_id):
     return jsonify(serialize_url_resource(update_url_by_id(url_id, parse_json_body())))
 
 
+@urls_bp.get("/urls/<int:url_id>/stats")
+def get_url_stats(url_id):
+    from app.models.event import Event
+    url = get_url_by_id(url_id)
+    click_events = Event.select().where(
+        (Event.url == url_id) & (Event.event_type == "click")
+    ).count()
+    data = serialize_url_resource(url)
+    data["click_count"] = click_events or url.click_count or 0
+    return jsonify(data)
+
+
 @urls_bp.delete("/urls/<int:url_id>")
 def remove_url(url_id):
     delete_url_by_id(url_id)
