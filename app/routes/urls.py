@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, jsonify, redirect, request
 
 from app.metrics import mark_redirect
-from app.services.events import enqueue_click_event
+from app.services.events import create_event, enqueue_click_event
 from app.services.urls import (
     create_short_url,
     deactivate_short_code,
@@ -117,16 +117,20 @@ def redirect_short_code(short_code):
     _user_id = url["user_id"] if is_dict else url.user_id
     _short_code = url["short_code"] if is_dict else url.short_code
     _original_url = url["original_url"] if is_dict else url.original_url
-    enqueue_click_event(
-        _id,
-        _user_id,
-        {
-            "short_code": _short_code,
-            "referrer": request.headers.get("Referer"),
-            "user_agent": request.headers.get("User-Agent"),
-            "remote_addr": request.headers.get("X-Forwarded-For", request.remote_addr),
-        },
-    )
+    try:
+        create_event(
+            _id,
+            _user_id,
+            "click",
+            {
+                "short_code": _short_code,
+                "referrer": request.headers.get("Referer"),
+                "user_agent": request.headers.get("User-Agent"),
+                "remote_addr": request.headers.get("X-Forwarded-For", request.remote_addr),
+            },
+        )
+    except Exception:
+        pass
     mark_redirect()
     response = redirect(_original_url, code=302)
     response.headers["X-Cache"] = "HIT" if is_dict else "MISS"

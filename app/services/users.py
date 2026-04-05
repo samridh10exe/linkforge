@@ -70,6 +70,9 @@ def create_user(username, email, *, user_id=None, created_at=None):
         with db.atomic():
             return User.create(**payload)
     except IntegrityError as exc:
+        existing = User.get_or_none(User.email == email)
+        if existing is not None and existing.username == username:
+            return existing
         raise APIError(409, "email_conflict", "Email already exists") from exc
 
 
