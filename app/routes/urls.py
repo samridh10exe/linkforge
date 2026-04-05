@@ -1,5 +1,6 @@
 from flask import Blueprint, current_app, jsonify, redirect, request
 
+from app.database import db
 from app.metrics import mark_redirect
 from app.models.url import Url
 from app.services.events import create_event, enqueue_click_event
@@ -135,6 +136,11 @@ def redirect_short_code(short_code):
                 "remote_addr": request.headers.get("X-Forwarded-For", request.remote_addr),
             },
         )
+    except Exception:
+        pass
+    # increment click count
+    try:
+        Url.update(click_count=Url.click_count + 1).where(Url.id == _id).execute()
     except Exception:
         pass
     mark_redirect()

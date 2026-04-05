@@ -1,4 +1,4 @@
-from peewee import BooleanField, CharField, Check, DateTimeField, ForeignKeyField, TextField
+from peewee import BooleanField, CharField, Check, DateTimeField, ForeignKeyField, IntegerField, TextField
 
 from app.database import BaseModel
 from app.models.user import User
@@ -14,6 +14,7 @@ class Url(BaseModel):
     original_url = TextField(constraints=[Check("char_length(btrim(original_url)) > 0")])
     title = CharField(constraints=[Check("char_length(btrim(title)) > 0")])
     is_active = BooleanField(default=True)
+    click_count = IntegerField(default=0)
     expires_at = DateTimeField(null=True)
     created_at = DateTimeField()
     updated_at = DateTimeField()

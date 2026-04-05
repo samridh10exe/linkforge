@@ -51,6 +51,8 @@ def serialize_url_resource(url):
         "original_url": url.original_url,
         "title": url.title,
         "is_active": url.is_active,
+        "click_count": url.click_count if hasattr(url, "click_count") else 0,
+        "expires_at": url.expires_at.isoformat() if url.expires_at else None,
         "created_at": url.created_at.isoformat(),
         "updated_at": url.updated_at.isoformat(),
     }

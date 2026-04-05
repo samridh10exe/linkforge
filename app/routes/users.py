@@ -61,18 +61,7 @@ def post_user():
     payload = parse_json_body()
     username = payload.get("username")
     email = payload.get("email")
-    try:
-        user = create_user(username, email)
-    except APIError as exc:
-        if exc.code != "email_conflict":
-            raise
-        existing = User.get_or_none(User.email == email)
-        if existing is None:
-            raise
-        if existing.username != username:
-            user = update_user(existing.id, {"username": username})
-        else:
-            user = existing
+    user = create_user(username, email)
     return jsonify(serialize_user(user)), 201
 
 

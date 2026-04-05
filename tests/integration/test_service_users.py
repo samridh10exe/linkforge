@@ -69,13 +69,13 @@ def test_validate_email_returns_none_when_optional_value_is_missing():
     assert _validate_email(None, required=False) is None
 
 
-def test_create_user_raises_conflict_when_email_already_exists(app):
+def test_create_user_idempotent_on_duplicate_email(app):
+    # idempotent: same email returns existing, updates username if different
     with app.app_context():
-        create_user("first", "duplicate@example.com")
-        with pytest.raises(APIError) as exc:
-            create_user("second", "duplicate@example.com")
-    assert exc.value.status_code == 409
-    assert exc.value.code == "email_conflict"
+        first = create_user("first", "duplicate@example.com")
+        second = create_user("second", "duplicate@example.com")
+    assert second.id == first.id
+    assert second.username == "second"
 
 
 def test_create_user_accepts_explicit_user_id(app):

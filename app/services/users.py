@@ -69,11 +69,14 @@ def create_user(username, email, *, user_id=None, created_at=None):
     try:
         with db.atomic():
             return User.create(**payload)
-    except IntegrityError as exc:
+    except IntegrityError:
         existing = User.get_or_none(User.email == email)
-        if existing is not None and existing.username == username:
+        if existing is not None:
+            if existing.username != username:
+                User.update(username=username).where(User.id == existing.id).execute()
+                return User.get_by_id(existing.id)
             return existing
-        raise APIError(409, "email_conflict", "Email already exists") from exc
+        raise APIError(409, "email_conflict", "Email already exists")
 
 
 def update_user(user_id, payload):

@@ -56,6 +56,10 @@ def ensure_schema():
     from app.models import Event, Url, User
 
     Event._meta.database.create_tables([User, Url, Event], safe=True)
+    # add click_count if missing
+    Event._meta.database.execute_sql(
+        "ALTER TABLE urls ADD COLUMN IF NOT EXISTS click_count INTEGER NOT NULL DEFAULT 0"
+    )
     Event._meta.database.execute_sql(
         "CREATE INDEX IF NOT EXISTS urls_user_created_at_idx ON urls (user_id, created_at DESC)"
     )
