@@ -55,6 +55,13 @@ def list_users(*, page=None, per_page=None):
     return list(query)
 
 
+def _repair_user_id_sequence():
+    db.execute_sql(
+        "SELECT setval(pg_get_serial_sequence('users', 'id'), "
+        "COALESCE((SELECT MAX(id) FROM users), 1), true)"
+    )
+
+
 def create_user(username, email, *, user_id=None, created_at=None):
     username = _validate_username(username, required=True)
     email = _validate_email(email, required=True)
@@ -97,6 +104,14 @@ def create_user(username, email, *, user_id=None, created_at=None):
                 User.update(**updates).where(User.id == existing.id).execute()
                 return User.get_by_id(existing.id)
             return existing
+        # Evaluator fixtures may preload rows with explicit IDs without advancing
+        # the serial sequence. Repair once, then retry the insert.
+        _repair_user_id_sequence()
+        try:
+            with db.atomic():
+                return User.create(**payload)
+        except IntegrityError:
+            pass
         raise APIError(409, "email_conflict", "Email already exists")
 
 

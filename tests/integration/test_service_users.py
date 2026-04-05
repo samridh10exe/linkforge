@@ -95,6 +95,20 @@ def test_create_user_recovers_from_stale_unique_username_constraint(app):
     assert second.email == "second@example.com"
 
 
+def test_create_user_repairs_stale_user_id_sequence_and_retries(app):
+    with app.app_context():
+        create_user("seeded-user-1", "seeded-user-1@example.com", user_id=1)
+        first = create_user("seeded-user", "seeded-user@example.com", user_id=400)
+        User._meta.database.execute_sql(
+            "SELECT setval(pg_get_serial_sequence('users', 'id'), 1, false)"
+        )
+        second = create_user("testuser_create", "testuser_create@example.com")
+    assert first.id == 400
+    assert second.id == 401
+    assert second.username == "testuser_create"
+    assert second.email == "testuser_create@example.com"
+
+
 def test_create_user_accepts_explicit_user_id(app):
     with app.app_context():
         user = create_user("explicit-id", "explicit-id@example.com", user_id=77)
