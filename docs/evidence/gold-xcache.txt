@@ -1,0 +1,9 @@
+$ curl -I http://localhost/tdmg9e
+HTTP/1.1 302 FOUND
+Location: https://hackstack.io/urban/meadow/1
+X-Cache: MISS
+
+$ curl -I http://localhost/tdmg9e
+HTTP/1.1 302 FOUND
+Location: https://hackstack.io/urban/meadow/1
+X-Cache: HIT

@@ -1,0 +1,7 @@
+$ cat ops/nginx/nginx.conf | grep -A5 "upstream"
+
+upstream app_servers {
+    server web1:8000;
+    server web2:8000;
+    keepalive 32;
+}

@@ -55,17 +55,17 @@ Raw artifacts:
 
 ## Droplet Load Tests (Production)
 
-Tests run from localhost on DigitalOcean Droplet (159.89.93.54), eliminating network latency.
+Tests run from localhost on DigitalOcean Droplet (159.89.93.54).
 Multi-container setup: nginx -> web1/web2 (round-robin), Redis cache, PostgreSQL.
+Locust runs on the same single-vCPU droplet, competing for CPU.
 
-| Scenario | VUs | Duration | RPS | p50 | p95 | Error Rate | Verdict |
-|---|---:|---:|---:|---:|---:|---:|---|
-| Read-heavy redirect | 200 | 60s | 135 | 1300ms | 3000ms | 0.00% | Silver pass |
-| Read-heavy redirect | 500 | 60s | 130 | 3500ms | 6300ms | 2.52% | Gold pass (<5%) |
+| VUs | Duration | RPS | p50 | p95 | Errors |
+|---:|---:|---:|---:|---:|---:|
+| 50 | 30s | 69 | 640ms | 1100ms | 0.00% |
+| 200 | 30s | 79 | 2200ms | 3100ms | 0.00% |
+| 400 | 60s | 68 | 4900ms | 9800ms | 0.00% |
 
-Error breakdown at 500 VUs:
-- 136x `HTTPConnectionClosed` (nginx upstream timeouts under extreme load)
-- 60x `500` (gunicorn worker saturation)
+Raw evidence: `docs/evidence/bronze-50vus.txt`, `silver-200vus.txt`, `gold-400vus.txt`
 
 ## Reproduce
 
