@@ -96,22 +96,22 @@ def test_resolve_short_code_raises_not_found_for_missing_code(app):
     assert exc.value.code == "short_code_not_found"
 
 
-def test_resolve_short_code_raises_gone_for_inactive_url(app, active_url):
+def test_resolve_short_code_raises_not_found_for_inactive_url(app, active_url):
     with app.app_context():
         Url.update(is_active=False).where(Url.id == active_url.id).execute()
         with pytest.raises(APIError) as exc:
             resolve_short_code(active_url.short_code)
-    assert exc.value.status_code == 410
-    assert exc.value.code == "short_code_inactive"
+    assert exc.value.status_code == 404
+    assert exc.value.code == "short_code_not_found"
 
 
-def test_resolve_short_code_raises_gone_for_expired_url(app, active_url):
+def test_resolve_short_code_raises_not_found_for_expired_url(app, active_url):
     with app.app_context():
         Url.update(expires_at=utcnow() - timedelta(minutes=5)).where(Url.id == active_url.id).execute()
         with pytest.raises(APIError) as exc:
             resolve_short_code(active_url.short_code)
-    assert exc.value.status_code == 410
-    assert exc.value.code == "short_code_expired"
+    assert exc.value.status_code == 404
+    assert exc.value.code == "short_code_not_found"
 
 
 def test_deactivate_short_code_raises_not_found_for_missing_code(app, user):

@@ -56,6 +56,9 @@ def ensure_schema():
     from app.models import Event, Url, User
 
     Event._meta.database.create_tables([User, Url, Event], safe=True)
+    Event._meta.database.execute_sql(
+        "ALTER TABLE users DROP CONSTRAINT IF EXISTS users_username_key"
+    )
     # add click_count if missing
     Event._meta.database.execute_sql(
         "ALTER TABLE urls ADD COLUMN IF NOT EXISTS click_count INTEGER NOT NULL DEFAULT 0"

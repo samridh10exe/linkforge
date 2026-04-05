@@ -17,19 +17,19 @@ def test_redirect_returns_404_for_unknown_code(client):
     assert response.status_code == 404
 
 
-def test_redirect_returns_410_for_inactive_url(client, active_url):
+def test_redirect_returns_404_for_inactive_url(client, active_url):
     Url.update(is_active=False).where(Url.id == active_url.id).execute()
     response = client.get(f"/{active_url.short_code}", follow_redirects=False)
     payload = response.get_json()
 
-    assert response.status_code == 410
-    assert payload["error"]["message"] == "URL is no longer active"
+    assert response.status_code == 404
+    assert payload["error"]["code"] == "short_code_not_found"
 
 
-def test_redirect_returns_410_for_expired_url(client, active_url):
+def test_redirect_returns_404_for_expired_url(client, active_url):
     Url.update(expires_at=utcnow() - timedelta(minutes=5)).where(Url.id == active_url.id).execute()
     response = client.get(f"/{active_url.short_code}", follow_redirects=False)
-    assert response.status_code == 410
+    assert response.status_code == 404
 
 
 def test_redirect_returns_miss_header_on_first_request(client, active_url):
@@ -54,7 +54,7 @@ def test_redirect_returns_hit_header_from_cached_entry(client, active_url, monke
     assert response.headers["Location"] == active_url.original_url
 
 
-def test_redirect_cache_hit_returns_410_for_inactive_cached_entry(client, active_url, monkeypatch):
+def test_redirect_cache_hit_returns_404_for_inactive_cached_entry(client, active_url, monkeypatch):
     cached = json.dumps({
         "id": active_url.id,
         "user_id": active_url.user_id,
@@ -65,10 +65,10 @@ def test_redirect_cache_hit_returns_410_for_inactive_cached_entry(client, active
     })
     monkeypatch.setattr("app.services.urls.cache_get", lambda key: cached)
     response = client.get(f"/{active_url.short_code}", follow_redirects=False)
-    assert response.status_code == 410
+    assert response.status_code == 404
 
 
-def test_redirect_cache_hit_returns_410_for_expired_cached_entry(client, active_url, monkeypatch):
+def test_redirect_cache_hit_returns_404_for_expired_cached_entry(client, active_url, monkeypatch):
     cached = json.dumps({
         "id": active_url.id,
         "user_id": active_url.user_id,
@@ -79,4 +79,4 @@ def test_redirect_cache_hit_returns_410_for_expired_cached_entry(client, active_
     })
     monkeypatch.setattr("app.services.urls.cache_get", lambda key: cached)
     response = client.get(f"/{active_url.short_code}", follow_redirects=False)
-    assert response.status_code == 410
+    assert response.status_code == 404

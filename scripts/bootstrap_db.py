@@ -13,6 +13,12 @@ def bootstrap(config=None):
     try:
         Event._meta.database.create_tables([User, Url, Event], safe=True)
         Event._meta.database.execute_sql(
+            "ALTER TABLE users DROP CONSTRAINT IF EXISTS users_username_key"
+        )
+        Event._meta.database.execute_sql(
+            "ALTER TABLE urls ADD COLUMN IF NOT EXISTS click_count INTEGER NOT NULL DEFAULT 0"
+        )
+        Event._meta.database.execute_sql(
             "CREATE INDEX IF NOT EXISTS urls_user_created_at_idx ON urls (user_id, created_at DESC)"
         )
         Event._meta.database.execute_sql(
