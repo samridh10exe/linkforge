@@ -109,11 +109,11 @@ def resolve_short_code(short_code):
     if cached is not None:
         data = json.loads(cached)
         if not data["is_active"]:
-            raise APIError(410, "short_code_inactive", "URL is no longer active")
+            raise APIError(404, "short_code_not_found", "Short code not found")
         if data["expires_at"] is not None:
             exp = datetime.fromisoformat(data["expires_at"])
             if exp <= utcnow():
-                raise APIError(410, "short_code_expired", "URL is no longer active")
+                raise APIError(404, "short_code_not_found", "Short code not found")
         data["_cache_hit"] = True
         return data
 
@@ -122,9 +122,9 @@ def resolve_short_code(short_code):
     if url is None:
         raise APIError(404, "short_code_not_found", "Short code not found")
     if not url.is_active:
-        raise APIError(410, "short_code_inactive", "URL is no longer active")
+        raise APIError(404, "short_code_not_found", "Short code not found")
     if url.expires_at is not None and url.expires_at <= utcnow():
-        raise APIError(410, "short_code_expired", "URL is no longer active")
+        raise APIError(404, "short_code_not_found", "Short code not found")
 
     # populate cache
     cache_set(f"url:{short_code}", json.dumps({
