@@ -21,7 +21,7 @@
 
 ## Discord Alerting
 
-- Monitor: `scripts/monitor.py` polls `/health` every 30s
+- Monitor: `scripts/monitor.py` polls `/health` on a configurable interval (`MONITOR_INTERVAL`, default `60s`)
 - Webhook: Discord `#alerts` channel
 - Evidence: `/var/log/monitor.log` on droplet
 
@@ -32,7 +32,7 @@ Alert cycle captured on 2026-04-05:
 ✅ [2026-04-05T05:33:01.628745] Service RECOVERED — http://localhost/health is back up
 ```
 
-Both messages posted to Discord (HTTP 204).
+Both messages posted to Discord (HTTP 204). In the captured production run, the monitor was configured with a 30-second interval, which is reflected in the alert timestamps.
 
 ## Runbook Linkage
 

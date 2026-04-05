@@ -1,8 +1,8 @@
 # Failure Modes
 
 - Missing short code: `404`
-- Inactive short code: `410`
-- Expired short code: `410`
+- Inactive short code: `404`
+- Expired short code: `404`
 - Duplicate `original_url` for the same active user: `409`
 - Wrong user deleting a short code: `403`
 - Invalid JSON or invalid schema: `400`
