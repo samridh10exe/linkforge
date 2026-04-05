@@ -66,6 +66,7 @@ def post_user():
 
 
 @users_bp.put("/users/<int:user_id>")
+@users_bp.patch("/users/<int:user_id>")
 def put_user(user_id):
     payload = parse_json_body()
     user = update_user(user_id, payload)

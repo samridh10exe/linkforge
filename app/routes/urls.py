@@ -97,6 +97,7 @@ def get_url(url_id):
 
 
 @urls_bp.put("/urls/<int:url_id>")
+@urls_bp.patch("/urls/<int:url_id>")
 def put_url(url_id):
     from app.validators import parse_json_body
 

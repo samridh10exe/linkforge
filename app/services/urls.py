@@ -202,6 +202,10 @@ def update_url_by_id(url_id, payload):
             raise APIError(400, "invalid_is_active", "is_active must be a boolean")
         updates["is_active"] = value
         changed["is_active"] = value
+    if "expires_at" in payload:
+        from app.validators import parse_timestamp
+        updates["expires_at"] = parse_timestamp(payload.get("expires_at"), "expires_at")
+        changed["expires_at"] = str(updates["expires_at"]) if updates["expires_at"] else None
 
     if not updates:
         raise APIError(400, "empty_update", "At least one field is required")
@@ -212,6 +216,8 @@ def update_url_by_id(url_id, payload):
         Url.update(**updates).where(Url.id == url.id).execute()
         for field, value in changed.items():
             create_event(url.id, url.user_id, "updated", {"field": field, "new_value": value})
+    # invalidate cache on any update
+    cache_delete(f"url:{url.short_code}")
     return get_url_by_id(url.id)
 
 

@@ -58,6 +58,13 @@ def list_users(*, page=None, per_page=None):
 def create_user(username, email, *, user_id=None, created_at=None):
     username = _validate_username(username, required=True)
     email = _validate_email(email, required=True)
+    # upsert: return existing on duplicate email
+    existing = User.get_or_none(User.email == email)
+    if existing is not None:
+        if existing.username != username:
+            User.update(username=username).where(User.id == existing.id).execute()
+            return User.get_by_id(existing.id)
+        return existing
     created_at = parse_timestamp(created_at, "created_at") if created_at is not None else utcnow()
     payload = {
         "username": username,
@@ -70,11 +77,9 @@ def create_user(username, email, *, user_id=None, created_at=None):
         with db.atomic():
             return User.create(**payload)
     except IntegrityError:
+        # race condition fallback
         existing = User.get_or_none(User.email == email)
         if existing is not None:
-            if existing.username != username:
-                User.update(username=username).where(User.id == existing.id).execute()
-                return User.get_by_id(existing.id)
             return existing
         raise APIError(409, "email_conflict", "Email already exists")
 
