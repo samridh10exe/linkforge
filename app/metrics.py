@@ -69,14 +69,18 @@ def mark_click_event_enqueue_failure():
 
 def render_metrics():
     try:
-        ACTIVE_URLS_TOTAL.set(
-            Url.select()
-            .where(
-                (Url.is_active == True)  # noqa: E712
-                & ((Url.expires_at.is_null(True)) | (Url.expires_at > utcnow()))
+        urls_table = db.execute_sql("SELECT to_regclass('public.urls')").fetchone()[0]
+        if urls_table is None:
+            ACTIVE_URLS_TOTAL.set(0)
+        else:
+            ACTIVE_URLS_TOTAL.set(
+                Url.select()
+                .where(
+                    (Url.is_active == True)  # noqa: E712
+                    & ((Url.expires_at.is_null(True)) | (Url.expires_at > utcnow()))
+                )
+                .count()
             )
-            .count()
-        )
     except Exception:
         ACTIVE_URLS_TOTAL.set(0)
 

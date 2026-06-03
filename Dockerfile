@@ -14,4 +14,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["uv", "run", "gunicorn", "-c", "gunicorn.conf.py", "run:app"]
+CMD [".venv/bin/gunicorn", "-c", "gunicorn.conf.py", "run:app"]

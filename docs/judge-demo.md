@@ -4,8 +4,8 @@
 
 ```bash
 docker compose up -d --build
-docker compose exec web1 env PYTHONPATH=/app uv run python scripts/bootstrap_db.py
-docker compose exec web1 env PYTHONPATH=/app uv run python scripts/seed.py "Seed Data"
+docker compose exec web1 env PYTHONPATH=/app .venv/bin/python scripts/bootstrap_db.py
+docker compose exec web1 env PYTHONPATH=/app .venv/bin/python scripts/seed.py "Seed Data"
 ```
 
 ## Evaluator contract

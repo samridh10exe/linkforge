@@ -38,5 +38,5 @@ curl -i http://localhost/ready
 ### Schema repair
 
 ```bash
-docker compose exec web1 env PYTHONPATH=/app uv run python scripts/bootstrap_db.py
+docker compose exec web1 env PYTHONPATH=/app .venv/bin/python scripts/bootstrap_db.py
 ```

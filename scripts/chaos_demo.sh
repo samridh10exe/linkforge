@@ -116,6 +116,7 @@ HEALTH_BODY="$(cat /tmp/chaos-body.$$ 2>/dev/null || true)"
 log "health during db outage: status=${HEALTH_CODE} body=${HEALTH_BODY}"
 sleep 3
 run_compose start postgres >> "${LOG_FILE}" 2>&1
+# shellcheck disable=SC2016
 run_compose exec -T postgres sh -lc 'until pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do sleep 1; done' >> "${LOG_FILE}" 2>&1
 wait_for_health 45
 READY_RECOVERY_CODE="$(http_status "${BASE_URL}/ready")"
