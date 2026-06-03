@@ -23,12 +23,12 @@ jobs:
           --health-retries=5
     env:
       PYTHONPATH: .
-      DATABASE_NAME: shortlink_app
+      DATABASE_NAME: linkforge_app
       DATABASE_HOST: localhost
       DATABASE_PORT: 5432
       DATABASE_USER: postgres
       DATABASE_PASSWORD: postgres
-      TEST_DATABASE_NAME: shortlink_test
+      TEST_DATABASE_NAME: linkforge_test
       PGPASSWORD: postgres
     steps:
       - uses: actions/checkout@v4
@@ -48,8 +48,8 @@ jobs:
           done
       - name: Create app and test databases
         run: |
-          psql -h localhost -U postgres -d postgres -c "CREATE DATABASE shortlink_app;"
-          psql -h localhost -U postgres -d postgres -c "CREATE DATABASE shortlink_test;"
+          psql -h localhost -U postgres -d postgres -c "CREATE DATABASE linkforge_app;"
+          psql -h localhost -U postgres -d postgres -c "CREATE DATABASE linkforge_test;"
       - name: Bootstrap app schema
         run: uv run python scripts/bootstrap_db.py
       - name: Bootstrap test schema

@@ -1,6 +1,6 @@
-# shortlink-service
+# linkforge
 
-`shortlink-service` is a Flask URL shortener built for MLH PE Hackathon 2026 with PostgreSQL storage, Redis-backed redirect caching, Prometheus metrics, and load-test runbooks.
+`linkforge` is a Flask URL shortener built for MLH PE Hackathon 2026 with PostgreSQL storage, Redis-backed redirect caching, Prometheus metrics, and load-test runbooks.
 
 ## Install
 

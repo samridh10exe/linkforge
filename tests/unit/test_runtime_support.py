@@ -147,7 +147,7 @@ def test_ready_returns_database_unavailable_when_database_is_down():
     app = create_app(
         {
             "TESTING": True,
-            "DATABASE_NAME": "shortlink_test",
+            "DATABASE_NAME": "linkforge_test",
             "DATABASE_HOST": "localhost",
             "DATABASE_PORT": 1,
             "DATABASE_USER": "postgres",
@@ -168,7 +168,7 @@ def test_non_health_route_returns_database_unavailable_when_before_request_conne
     app = create_app(
         {
             "TESTING": True,
-            "DATABASE_NAME": "shortlink_test",
+            "DATABASE_NAME": "linkforge_test",
             "DATABASE_HOST": "localhost",
             "DATABASE_PORT": 1,
             "DATABASE_USER": "postgres",

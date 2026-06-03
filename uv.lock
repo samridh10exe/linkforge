@@ -551,7 +551,7 @@ wheels = [
 ]
 
 [[package]]
-name = "shortlink-service"
+name = "linkforge"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

@@ -26,11 +26,11 @@ export DATABASE_HOST=localhost
 export DATABASE_PORT=5432
 export DATABASE_USER=postgres
 export DATABASE_PASSWORD=postgres
-export DATABASE_NAME=shortlink_app
+export DATABASE_NAME=linkforge_app
 
 run_compose stop web nginx >/dev/null 2>&1 || true
-run_compose exec -T postgres dropdb -U postgres --if-exists shortlink_app
-run_compose exec -T postgres createdb -U postgres shortlink_app
+run_compose exec -T postgres dropdb -U postgres --if-exists linkforge_app
+run_compose exec -T postgres createdb -U postgres linkforge_app
 uv run python scripts/bootstrap_db.py >/dev/null
 uv run python scripts/seed.py >/dev/null
 run_compose up -d web nginx >/dev/null

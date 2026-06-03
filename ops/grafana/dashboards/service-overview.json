@@ -99,12 +99,12 @@
   ],
   "refresh": "5s",
   "schemaVersion": 39,
-  "tags": ["shortlink-service"],
+  "tags": ["linkforge"],
   "templating": { "list": [] },
   "time": { "from": "now-15m", "to": "now" },
   "timepicker": {},
   "timezone": "utc",
-  "title": "Shortlink Service Overview",
-  "uid": "shortlink-service-overview",
+  "title": "Linkforge Overview",
+  "uid": "linkforge-overview",
   "version": 1
 }

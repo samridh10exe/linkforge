@@ -26,7 +26,7 @@ If the database is down:
 ```bash
 docker compose ps
 docker compose start postgres
-docker compose exec -T postgres pg_isready -U postgres -d shortlink_app
+docker compose exec -T postgres pg_isready -U postgres -d linkforge_app
 ```
 
 If the schema is missing:
