@@ -551,7 +551,7 @@ wheels = [
 ]
 
 [[package]]
-name = "mlh-pe-hackathon"
+name = "shortlink-service"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

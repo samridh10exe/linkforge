@@ -31,7 +31,7 @@ curl -i http://localhost/health
 
 ```bash
 docker compose start postgres
-docker compose exec -T postgres pg_isready -U postgres -d hackathon_app
+docker compose exec -T postgres pg_isready -U postgres -d shortlink_app
 curl -i http://localhost/ready
 ```
 

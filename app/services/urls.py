@@ -117,7 +117,7 @@ def resolve_short_code(short_code):
         data["_cache_hit"] = True
         return data
 
-    # cache miss — hit db
+    # cache miss, hit db
     url = Url.get_or_none(Url.short_code == short_code)
     if url is None:
         raise APIError(404, "short_code_not_found", "Short code not found")

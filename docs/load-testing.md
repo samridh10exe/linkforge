@@ -1,6 +1,6 @@
 # Load Testing Results
 
-All reported runs used a freshly reset and reseeded `hackathon_app` database before each scenario.
+All reported runs used a freshly reset and reseeded `shortlink_app` database before each scenario.
 
 Profiles:
 - Baseline: `2 workers x 4 threads`, DB pool `12`

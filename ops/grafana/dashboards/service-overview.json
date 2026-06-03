@@ -99,12 +99,12 @@
   ],
   "refresh": "5s",
   "schemaVersion": 39,
-  "tags": ["url-shortener"],
+  "tags": ["shortlink-service"],
   "templating": { "list": [] },
   "time": { "from": "now-15m", "to": "now" },
   "timepicker": {},
   "timezone": "utc",
-  "title": "URL Shortener — Service Overview",
-  "uid": "url-shortener-overview",
+  "title": "Shortlink Service Overview",
+  "uid": "shortlink-service-overview",
   "version": 1
 }

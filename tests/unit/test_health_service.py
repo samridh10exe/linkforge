@@ -8,7 +8,7 @@ from app.services.health import database_status
 def test_database_status_returns_degraded_on_failure():
     app = Flask(__name__)
     app.config.update(
-        DATABASE_NAME="hackathon_app",
+        DATABASE_NAME="shortlink_app",
         DATABASE_HOST="localhost",
         DATABASE_PORT=5432,
         DATABASE_USER="postgres",
@@ -23,7 +23,7 @@ def test_database_status_returns_degraded_on_failure():
 def test_database_status_returns_connected_on_success():
     app = Flask(__name__)
     app.config.update(
-        DATABASE_NAME="hackathon_app",
+        DATABASE_NAME="shortlink_app",
         DATABASE_HOST="localhost",
         DATABASE_PORT=5432,
         DATABASE_USER="postgres",

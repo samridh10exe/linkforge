@@ -1,6 +1,6 @@
-# url-shortener
+# shortlink-service
 
-`url-shortener` is a Flask service that stores short links in PostgreSQL, caches redirects in Redis, and exposes Prometheus metrics for load-test and incident drills.
+`shortlink-service` is a Flask URL shortener built for MLH PE Hackathon 2026 with PostgreSQL storage, Redis-backed redirect caching, Prometheus metrics, and load-test runbooks.
 
 ## Install
 
@@ -32,4 +32,4 @@ uv run pytest --cov=app --cov-report=term-missing
 
 ## How It Works
 
-nginx load-balances across two Gunicorn app containers. PostgreSQL stores users, URLs, and events. Redis caches resolved short codes on the redirect path and marks responses with `X-Cache: HIT` or `X-Cache: MISS`. `docs/runbook.md`, `docs/failure-modes.md`, and `docs/load-testing.md` cover the operational paths.
+nginx load-balances across two Gunicorn app containers. PostgreSQL stores users, URLs, and click events. Redis caches resolved short codes and marks redirect responses with `X-Cache: HIT` or `X-Cache: MISS`. `docs/runbook.md`, `docs/failure-modes.md`, and `docs/load-testing.md` cover the operational paths.

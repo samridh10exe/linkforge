@@ -46,11 +46,11 @@ def main():
         is_up = check_health()
         now = datetime.datetime.utcnow().isoformat()
         if is_up and not was_up:
-            msg = f"✅ [{now}] Service RECOVERED — {HEALTH_URL} is back up"
+            msg = f"[RECOVERED] [{now}] {HEALTH_URL} is back up"
             print(msg)
             post_discord(msg)
         elif not is_up and was_up:
-            msg = f"🚨 [{now}] Service DOWN — {HEALTH_URL} is not responding"
+            msg = f"[DOWN] [{now}] {HEALTH_URL} is not responding"
             print(msg)
             post_discord(msg)
         was_up = is_up
